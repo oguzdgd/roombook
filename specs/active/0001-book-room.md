@@ -1,6 +1,6 @@
 # Spec 0001 — Book a room with conflict rejection and free-slot suggestions
 
-- Status: Approved
+- Status: In progress
 - Mode: strict (from AGENTS.md at creation time)
 - Plan: `specs/plans/0001-plan.md`
 
@@ -65,54 +65,59 @@ out of scope and left to a future spec.
 
 ## Acceptance criteria
 
-- [ ] AC-1 — Booking a Room with a valid, non-overlapping time window, organizer, and title
+- [x] AC-1 — Booking a Room with a valid, non-overlapping time window, organizer, and title
       succeeds.
-- [ ] AC-2 — Booking a Room with a time window that exactly matches an existing Booking's window is
+- [x] AC-2 — Booking a Room with a time window that exactly matches an existing Booking's window is
       rejected as a conflict.
-- [ ] AC-3 — Booking a Room with a time window that partially overlaps an existing Booking (new
+- [x] AC-3 — Booking a Room with a time window that partially overlaps an existing Booking (new
       start falls inside the existing booking) is rejected as a conflict.
-- [ ] AC-4 — Booking a Room with a time window that partially overlaps an existing Booking (new end
+- [x] AC-4 — Booking a Room with a time window that partially overlaps an existing Booking (new end
       falls inside the existing booking) is rejected as a conflict.
-- [ ] AC-5 — Booking a Room with a time window that fully contains an existing Booking's window is
+- [x] AC-5 — Booking a Room with a time window that fully contains an existing Booking's window is
       rejected as a conflict.
-- [ ] AC-6 — Booking a Room with a time window that touches an existing Booking (new start equals
+- [x] AC-6 — Booking a Room with a time window that touches an existing Booking (new start equals
       existing end, or new end equals existing start) is NOT a conflict and succeeds.
-- [ ] AC-7 — A conflict rejection identifies every existing Booking it overlaps with (time range and
+- [x] AC-7 — A conflict rejection identifies every existing Booking it overlaps with (time range and
       title of each), not just the first one found, ordered ascending by start time.
-- [ ] AC-8 — A conflict rejection includes up to 3 suggested free time windows for the same Room,
+- [x] AC-8 — A conflict rejection includes up to 3 suggested free time windows for the same Room,
       each with the same duration as requested, starting at or after the requested start, free of
       conflicts, within 7 days of the requested start.
-- [ ] AC-9 — When there are no existing Bookings for the Room at all, a valid request succeeds
+- [x] AC-9 — When there are no existing Bookings for the Room at all, a valid request succeeds
       (no conflict to check against).
-- [ ] AC-10 — When the requested Room's remaining free capacity within the 7-day horizon cannot
+- [x] AC-10 — When the requested Room's remaining free capacity within the 7-day horizon cannot
       fit even one window of the requested duration, the conflict rejection's suggestion list is
       empty (not an error).
-- [ ] AC-11 — Booking a non-existent Room is rejected distinguishably from both a conflict
+- [x] AC-11 — Booking a non-existent Room is rejected distinguishably from both a conflict
       rejection and an invalid-time-window rejection, with no suggestions computed.
-- [ ] AC-12 — Booking with an end time not strictly after the start time is rejected
+- [x] AC-12 — Booking with an end time not strictly after the start time is rejected
       distinguishably from both a conflict rejection and a room-not-found rejection, with no
       suggestions computed.
-- [ ] AC-13 — Booking with a start time strictly before the current time is rejected
+- [x] AC-13 — Booking with a start time strictly before the current time is rejected
       distinguishably from both a conflict rejection and a room-not-found rejection, with no
       suggestions computed; a start time exactly equal to the current time is NOT rejected on
       this basis.
-- [ ] AC-14 — Booking with a missing or empty organizer or title is rejected as invalid input.
-- [ ] AC-15 — Booking with a start or end timestamp that lacks UTC/timezone information (a naive
+- [x] AC-14 — Booking with a missing or empty organizer or title is rejected as invalid input.
+- [x] AC-15 — Booking with a start or end timestamp that lacks UTC/timezone information (a naive
       timestamp) is rejected as invalid input, distinguishably from a conflict rejection.
 
 ## Definition of Done
 
-- [ ] Every acceptance criterion mapped to proof (test or reproducible observation)
-- [ ] `scripts/check` green
-- [ ] Independent review done; real findings fixed, noise rejected with written rationale
-- [ ] Docs / ADRs updated if behavior or architecture changed
-- [ ] Spec moved to `specs/done/` (it becomes immutable there)
+- [x] Every acceptance criterion mapped to proof (test or reproducible observation) — see
+      criterion↔evidence table in the QA verification (2026-09-12); 26 tests green.
+- [x] `scripts/check` green
+- [x] Independent review done; real findings fixed, noise rejected with written rationale (5 real
+      findings fixed across 4 commits; 1 low-severity finding rejected as noise — undocumented but
+      functionally-correct plan deviation, no behavior change needed)
+- [x] Docs / ADRs updated if behavior or architecture changed — no update needed; the one
+      maintainability fix (composition-root wiring in `service/wiring.py`) reinforces the
+      already-documented `docs/architecture.md` forbidden-dependency rule rather than changing it.
+- [ ] Spec moved to `specs/done/` (it becomes immutable there) — pending ship gate.
 
 ## Scorecard (fill at ship — honest numbers make the process improvable)
 | Metric | Value |
 |---|---|
-| Spec revisions | |
-| Fix rounds | |
-| Review findings: real / noise | |
-| Regressions introduced | |
-| Bugs escaped to production | |
+| Spec revisions | 0 (post-approval) |
+| Fix rounds | 1 |
+| Review findings: real / noise | 5 / 1 |
+| Regressions introduced | 0 |
+| Bugs escaped to production | N/A (not yet shipped) |
