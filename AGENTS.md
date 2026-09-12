@@ -1,13 +1,14 @@
 # AGENTS.md — Project Rules
 
-> **STATUS: NOT CONFIGURED.** This workspace has not been adapted to a project yet.
-> The only correct first action is the bootstrap workflow (`workflows/bootstrap.md`).
-> Until bootstrap completes and rewrites this file, do not write application code.
+## Project
+
+**RoomBook** — meeting-room booking API (conflict detection, free-slot suggestions). V1: Python +
+FastAPI, in-memory storage, no auth, single office. Layered monolith `api → service → repository`
+(`docs/architecture.md`). No code yet — the first spec starts the build.
 
 ## Operating mode
 
-**Mode: unset** — bootstrap sets this to `lite` or `strict` (see `workflows/README.md`).
-Every workflow honors the gates of the current mode.
+**Mode: strict** — full spine incl. gates at spec, plan, finding triage, ship (`workflows/README.md`).
 
 ## Invariant rules (these survive bootstrap — never delete or weaken them)
 

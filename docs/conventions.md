@@ -1,20 +1,26 @@
 # Conventions
 
-> **Template — filled during bootstrap.** Only rules that are real: every rule here should be
-> either enforced by tooling (preferred) or checked in review. Aspirations don't belong here.
-
 ## Language & framework versions
-<!-- Pin what matters. -->
+Python 3.12+, FastAPI, Pydantic v2. Lint: ruff. Types: mypy (strict). Tests: pytest.
 
 ## Naming
-<!-- Files, types, tests, branches — whatever the team must keep consistent. -->
+- Files/functions/variables: `snake_case`. Classes and Pydantic models: `PascalCase`.
+- Tests mirror the module they cover: `tests/unit/test_<module>.py`, `tests/api/test_<router>.py`.
+- Branch names and commits follow `docs/git.md`.
 
 ## Error handling
-<!-- The one blessed pattern. What never leaks to users. -->
+Domain errors are typed exceptions raised in `service/` (e.g. `BookingConflictError`,
+`InvalidTimeSlotError`). `api/` maps them to HTTP status: conflict → 409, invalid input/validation
+→ 422 (Pydantic-driven where possible), not found → 404. No raw stack traces or internal details
+ever appear in a response body.
 
 ## Data rules
-<!-- e.g. money/percentages use decimal types; timestamps are UTC; IDs are ... -->
+- Timestamps: UTC, timezone-aware `datetime`, ISO-8601 on the wire.
+- IDs: UUID4 strings, generated server-side.
+- Time ranges: `end` is exclusive of the next Booking's `start` (touching slots don't conflict —
+  see BR-1).
 
 ## Enforced by tooling
-<!-- List what the compiler/linter/analyzers already enforce, so review doesn't re-litigate it.
-Wire new rules into `scripts/check` whenever possible — prose is advice, tooling is law. -->
+- ruff: style and common bugs (wired into `scripts/check.conf`).
+- mypy: type correctness (wired into `scripts/check.conf`).
+- pytest: behavior (wired into `scripts/check.conf`).
