@@ -123,8 +123,9 @@ def test_conflict_lists_all_overlaps_ordered_by_start(
     _book(rooms_repo, bookings_repo, clock, test_room, _slot(1, 1), title="First")  # [1,2)
     with pytest.raises(BookingConflictError) as exc_info:
         _book(rooms_repo, bookings_repo, clock, test_room, _slot(0, 10))  # [0,10) overlaps both
-    titles = [b.title for b in exc_info.value.conflicts]
-    assert titles == ["First", "Second"]
+    conflicts = exc_info.value.conflicts
+    assert [b.title for b in conflicts] == ["First", "Second"]
+    assert [b.slot for b in conflicts] == [_slot(1, 1), _slot(5, 1)]
 
 
 # AC-8 — up to 3 suggestions, same duration, >= requested start, within 7 days

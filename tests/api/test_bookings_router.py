@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
@@ -156,5 +156,24 @@ def test_conflicting_booking_returns_409_with_details(client: TestClient, test_r
     assert second.status_code == 409
     body = second.json()
     assert body["error"] == "conflict"
-    assert body["conflicts"][0]["title"] == "Standup"
+    conflict = body["conflicts"][0]
+    assert conflict["title"] == "Standup"
+    assert datetime.fromisoformat(conflict["start"]) == FIXED_NOW + timedelta(hours=1)
+    assert datetime.fromisoformat(conflict["end"]) == FIXED_NOW + timedelta(hours=2)
     assert len(body["suggestions"]) >= 1
+
+
+# AC-13 — start strictly before now, at the API layer (422, distinguishable from a conflict)
+def test_start_before_now_returns_422(client: TestClient, test_room: Room) -> None:
+    response = client.post(
+        "/bookings",
+        json={
+            "room_id": test_room.id,
+            "start": _iso(-1),
+            "end": _iso(0),
+            "organizer": "Alice",
+            "title": "Sync",
+        },
+    )
+    assert response.status_code == 422
+    assert response.json()["error"] == "invalid_time_slot"
