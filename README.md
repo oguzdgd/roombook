@@ -1,3 +1,20 @@
+## Running RoomBook locally
+
+This project (bootstrapped from ANEW) is Python 3.12+/FastAPI. Before `./scripts/check` will find
+`ruff`/`mypy`/`pytest`, create a virtualenv and install the project with its dev dependencies:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -e ".[dev]"
+./scripts/check
+```
+
+CI does the equivalent (`actions/setup-python` + `pip install -e ".[dev]"`) before running the same
+`./scripts/check` — see `.github/workflows/check.yml`.
+
+---
+
 # ANEW — AI Native Engineering Workspace
 
 **A general-purpose, technology-agnostic bootstrap for building software with AI — under control.**
