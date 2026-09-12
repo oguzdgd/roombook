@@ -80,18 +80,35 @@ def test_invalid_window_returns_422(client: TestClient, test_room: Room) -> None
 
 
 # AC-14 — missing/empty organizer or title, 422 (Pydantic-level validation)
-def test_missing_organizer_or_title_returns_422(client: TestClient, test_room: Room) -> None:
-    response = client.post(
-        "/bookings",
-        json={
-            "room_id": test_room.id,
-            "start": _iso(1),
-            "end": _iso(2),
-            "organizer": "",
-            "title": "Sync",
-        },
-    )
+@pytest.mark.parametrize(
+    "overrides",
+    [
+        pytest.param({"organizer": ""}, id="empty_organizer"),
+        pytest.param({"organizer": None}, id="missing_organizer"),
+        pytest.param({"title": ""}, id="empty_title"),
+        pytest.param({"title": None}, id="missing_title"),
+    ],
+)
+def test_missing_organizer_or_title_returns_422(
+    client: TestClient, test_room: Room, overrides: dict[str, str | None]
+) -> None:
+    body = {
+        "room_id": test_room.id,
+        "start": _iso(1),
+        "end": _iso(2),
+        "organizer": "Alice",
+        "title": "Sync",
+    }
+    for key, value in overrides.items():
+        if value is None:
+            del body[key]
+        else:
+            body[key] = value
+
+    response = client.post("/bookings", json=body)
+
     assert response.status_code == 422
+    assert response.json()["error"] == "invalid_input"
 
 
 # AC-15 — naive timestamp (no timezone), 422, distinguishable from a conflict rejection
