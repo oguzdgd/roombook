@@ -7,7 +7,13 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 
-from roombook.api.dependencies import get_bookings_repo, get_clock, get_rooms_repo
+from roombook.api.dependencies import (
+    BookingRepository,
+    RoomRepository,
+    get_bookings_repo,
+    get_clock,
+    get_rooms_repo,
+)
 from roombook.api.schemas import (
     BookingResponse,
     ConflictDetail,
@@ -18,7 +24,6 @@ from roombook.api.schemas import (
 )
 from roombook.domain.clock import Clock
 from roombook.domain.models import TimeSlot
-from roombook.repository.interfaces import BookingRepository, RoomRepository
 from roombook.service.booking_service import create_booking
 from roombook.service.errors import BookingConflictError, InvalidTimeSlotError, RoomNotFoundError
 
