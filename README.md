@@ -1,11 +1,26 @@
 ## Running RoomBook locally
 
-This project (bootstrapped from ANEW) is Python 3.12+/FastAPI. Before `./scripts/check` will find
-`ruff`/`mypy`/`pytest`, create a virtualenv and install the project with its dev dependencies:
+This project (bootstrapped from ANEW) is Python 3.12+/FastAPI. `./scripts/check` shells out to
+bare `ruff`/`mypy`/`pytest`, which only resolve once a virtualenv containing them is **activated**
+(its `Scripts`/`bin` directory on `PATH`) — create one, activate it, then install:
 
 ```bash
 python -m venv .venv
-source .venv/bin/activate        # Windows: .venv\Scripts\activate
+```
+
+Activate — pick the line for your shell (on Windows, `python -m venv` creates `.venv\Scripts\`,
+not `.venv\bin\` — even under Git Bash):
+
+| Shell | Activate with |
+|---|---|
+| macOS/Linux (bash/zsh) | `source .venv/bin/activate` |
+| Windows — Git Bash / MINGW64 | `source .venv/Scripts/activate` |
+| Windows — PowerShell | `.venv\Scripts\Activate.ps1` |
+| Windows — cmd.exe | `.venv\Scripts\activate.bat` |
+
+Then, in the same activated shell:
+
+```bash
 pip install -e ".[dev]"
 ./scripts/check
 ```
