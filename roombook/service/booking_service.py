@@ -40,7 +40,7 @@ def _find_free_slots(
             suggestions.append(TimeSlot(start=cursor, end=cursor + duration))
         cursor = max(cursor, slot.end)
 
-    if len(suggestions) < max_suggestions and cursor < horizon_end:
+    if len(suggestions) < max_suggestions and horizon_end - cursor >= duration:
         suggestions.append(TimeSlot(start=cursor, end=cursor + duration))
 
     return suggestions[:max_suggestions]

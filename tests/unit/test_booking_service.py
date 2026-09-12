@@ -205,3 +205,60 @@ def test_start_equal_to_now_is_allowed(
     slot = TimeSlot(start=FIXED_NOW, end=FIXED_NOW + timedelta(hours=1))
     _book(rooms_repo, bookings_repo, clock, test_room, slot)
     assert len(bookings_repo.list_for_room(test_room.id)) == 1
+
+
+# AC-8/AC-10 boundary — a tail gap smaller than the requested duration must not be suggested,
+# even though it starts within the 7-day horizon (regression: the tail candidate used to be
+# appended unconditionally, letting it extend past the horizon with insufficient real capacity).
+def test_tail_gap_smaller_than_duration_is_not_suggested(
+    rooms_repo: Rooms, bookings_repo: Bookings, clock: Clock, test_room: Room
+) -> None:
+    duration = timedelta(hours=2)
+    horizon_end = FIXED_NOW + timedelta(days=7)
+    # Existing booking leaves only a 30-minute tail gap before the horizon — too small to fit.
+    existing_end = horizon_end - timedelta(minutes=30)
+    _book(
+        rooms_repo,
+        bookings_repo,
+        clock,
+        test_room,
+        TimeSlot(start=FIXED_NOW, end=existing_end),
+    )
+    with pytest.raises(BookingConflictError) as exc_info:
+        create_booking(
+            room_id=test_room.id,
+            slot=TimeSlot(start=FIXED_NOW, end=FIXED_NOW + duration),
+            organizer="Alice",
+            title="Sync",
+            rooms=rooms_repo,
+            bookings=bookings_repo,
+            clock=clock,
+        )
+    assert exc_info.value.suggestions == []
+
+
+# AC-8 boundary — a tail gap exactly equal to the requested duration IS suggested.
+def test_tail_gap_exactly_duration_is_suggested(
+    rooms_repo: Rooms, bookings_repo: Bookings, clock: Clock, test_room: Room
+) -> None:
+    duration = timedelta(hours=2)
+    horizon_end = FIXED_NOW + timedelta(days=7)
+    existing_end = horizon_end - duration
+    _book(
+        rooms_repo,
+        bookings_repo,
+        clock,
+        test_room,
+        TimeSlot(start=FIXED_NOW, end=existing_end),
+    )
+    with pytest.raises(BookingConflictError) as exc_info:
+        create_booking(
+            room_id=test_room.id,
+            slot=TimeSlot(start=FIXED_NOW, end=FIXED_NOW + duration),
+            organizer="Alice",
+            title="Sync",
+            rooms=rooms_repo,
+            bookings=bookings_repo,
+            clock=clock,
+        )
+    assert exc_info.value.suggestions == [TimeSlot(start=existing_end, end=existing_end + duration)]
