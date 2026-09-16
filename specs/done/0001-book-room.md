@@ -1,6 +1,6 @@
 # Spec 0001 — Book a room with conflict rejection and free-slot suggestions
 
-- Status: In progress
+- Status: Shipped
 - Mode: strict (from AGENTS.md at creation time)
 - Plan: `specs/plans/0001-plan.md`
 
@@ -111,7 +111,8 @@ out of scope and left to a future spec.
 - [x] Docs / ADRs updated if behavior or architecture changed — no update needed; the one
       maintainability fix (composition-root wiring in `service/wiring.py`) reinforces the
       already-documented `docs/architecture.md` forbidden-dependency rule rather than changing it.
-- [ ] Spec moved to `specs/done/` (it becomes immutable there) — pending ship gate.
+- [x] Spec moved to `specs/done/` (it becomes immutable there) — merged via
+      [PR #1](https://github.com/oguzdgd/roombook/pull/1).
 
 ## Scorecard (fill at ship — honest numbers make the process improvable)
 | Metric | Value |
